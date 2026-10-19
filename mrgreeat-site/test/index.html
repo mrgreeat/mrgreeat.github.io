@@ -1,0 +1,377 @@
+<!doctype html><html lang="ru"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Почему живот на месте</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one focused column. Intro → one question per screen (with fact interstitials) → "analysing" screen → diagnostic report. */
+:root{
+  --bg:#f2f3ef; --surface:#ffffff; --track:#e6e8e2; --ink:#121613; --muted:#6a706b; --line:#e0e3dc;
+  --accent:#d2461b; --accent-ink:#ffffff; --tint:#fbeee8;
+  --slab:#121613; --slab-ink:#f2f3ef; --slab-muted:#9aa29c; --slab-line:#2a302c; --slab-track:#262c28;
+  --ok:#3f8f62; --mid:#c8901e; --bad:#d2461b;
+  --sans:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0d0c; --surface:#131715; --track:#1f2521; --ink:#eef0ec; --muted:#8d948e; --line:#232925;
+  --accent:#ff6b3d; --accent-ink:#160904; --tint:#2a1810;
+  --slab:#181d1a; --slab-ink:#eef0ec; --slab-muted:#8d948e; --slab-line:#2b322e; --slab-track:#2a312d;
+  --ok:#5fc08a; --mid:#e6b04a; --bad:#ff6b3d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0d0c; --surface:#131715; --track:#1f2521; --ink:#eef0ec; --muted:#8d948e; --line:#232925;
+  --accent:#ff6b3d; --accent-ink:#160904; --tint:#2a1810;
+  --slab:#181d1a; --slab-ink:#eef0ec; --slab-muted:#8d948e; --slab-line:#2b322e; --slab-track:#2a312d;
+  --ok:#5fc08a; --mid:#e6b04a; --bad:#ff6b3d; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+.label.hot{color:var(--accent)}
+h1{font-weight:800;font-size:clamp(2rem,7.4vw,3.2rem);line-height:1.03;letter-spacing:-.035em;margin:0;text-wrap:balance}
+h2{font-weight:800;font-size:clamp(1.45rem,4.8vw,2rem);line-height:1.1;letter-spacing:-.025em;margin:0;text-wrap:balance}
+h3{font-weight:600;font-size:1.08rem;margin:0;letter-spacing:-.01em}
+p{margin:0}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;text-decoration:none;border:0;cursor:pointer;padding:0 22px;text-align:center;width:100%}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.small{min-height:40px;padding:0 14px;font-size:.9rem;width:auto}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.screen{display:flex;flex-direction:column;gap:22px}
+@media (prefers-reduced-motion:no-preference){.screen{animation:in .28s ease both}@keyframes in{from{opacity:.001;transform:translateY(8px)}to{opacity:1;transform:none}}}
+
+/* intro */
+.intro .lead{font-size:1.08rem;color:var(--muted);max-width:52ch}
+.zonesPreview{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:.88rem;font-weight:500}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--accent);display:block}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.facts div{padding:14px 10px 14px 0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.facts div+div{padding-left:14px;border-left:1px solid var(--line)}
+.facts b{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.facts span{font-size:.8rem;color:var(--muted)}
+
+/* quiz */
+.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px}
+.steps{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px}
+.steps i{height:4px;border-radius:2px;background:var(--track);transition:background .2s}
+.steps i.done{background:var(--accent)}
+.qtitle{font-weight:800;font-size:clamp(1.45rem,5.2vw,2.05rem);line-height:1.12;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.qhint{color:var(--muted);font-size:.92rem;margin-top:-10px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:30px minmax(0,1fr);gap:14px;align-items:center;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 16px;font:inherit;color:var(--ink);cursor:pointer;transition:border-color .15s}
+.opt:hover{border-color:var(--ink)}
+.opt .k{font-family:var(--mono);font-size:.78rem;color:var(--muted);width:30px;height:30px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.opt.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.opt.sel .k{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.opt small{display:block;color:var(--muted);font-size:.84rem;margin-top:2px}
+
+/* fact interstitial */
+.fact{background:var(--slab);color:var(--slab-ink);border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column;gap:16px}
+.fact .label{color:var(--accent)}
+.fact .big{margin-left:-.05em;font-weight:800;font-size:clamp(2.6rem,11vw,3.8rem);line-height:1;letter-spacing:-.04em}
+.fact p{color:var(--slab-muted);font-size:1rem}
+.fact p b{color:var(--slab-ink);font-weight:600}
+.fact .src{font-family:var(--mono);font-size:.72rem;color:var(--slab-muted);letter-spacing:.04em}
+
+/* analysing */
+.anal{display:flex;flex-direction:column;gap:18px;padding-top:12px}
+.anal ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:6px 18px}
+.anal li{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);color:var(--muted);font-weight:500}
+.anal li:last-child{border-bottom:0}
+.anal li .s{font-family:var(--mono);font-size:.75rem}
+.anal li.done{color:var(--ink)}
+.anal li.done .s{color:var(--ok)}
+
+/* result */
+.hero{background:var(--slab);color:var(--slab-ink);border-radius:var(--r);padding:26px 22px;display:grid;grid-template-columns:132px minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:460px){.hero{grid-template-columns:1fr;justify-items:start}}
+.gauge{position:relative;width:132px;height:132px}
+.gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+.gauge .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .num b{font-size:2.4rem;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.gauge .num span{font-size:.72rem;color:var(--slab-muted);font-family:var(--mono)}
+.hero .txt{display:flex;flex-direction:column;gap:10px;min-width:0}
+.hero .label{color:var(--slab-muted)}
+.hero h2{font-size:clamp(1.5rem,5.4vw,2.1rem)}
+.hero p{color:var(--slab-muted)}
+.hero .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--slab-line);padding-top:16px}
+.hero .meta span{border:1px solid var(--slab-line);border-radius:999px;padding:6px 11px;font-size:.82rem;color:var(--slab-ink)}
+
+.block{display:flex;flex-direction:column;gap:12px}
+.zones{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:6px 20px}
+.zone{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding-block:14px;border-bottom:1px solid var(--line);align-items:baseline}
+.zone:last-child{border-bottom:0}
+.zone h3{font-size:.98rem}
+.zone .st{font-size:.82rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.zone .meter{grid-column:1/-1;display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.zone .meter i{height:8px;border-radius:2px;background:var(--track)}
+.zone[data-l="ok"] .st{color:var(--ok)} .zone[data-l="ok"] .meter i.on{background:var(--ok)}
+.zone[data-l="mid"] .st{color:var(--mid)} .zone[data-l="mid"] .meter i.on{background:var(--mid)}
+.zone[data-l="bad"] .st{color:var(--bad)} .zone[data-l="bad"] .meter i.on{background:var(--bad)}
+.legend{font-size:.8rem;color:var(--muted)}
+
+.good{display:flex;flex-direction:column;gap:8px}
+.good li{list-style:none;display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;font-size:.95rem}
+.good ul{margin:0;padding:0;display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.good .ck{width:22px;height:22px;border-radius:50%;background:var(--ok);color:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;margin-top:1px}
+
+.cards{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px}
+.card.main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card .head{display:flex;flex-direction:column;gap:8px}
+.card .tag{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 9px;background:var(--track);color:var(--muted)}
+.pill.hot{background:var(--tint);color:var(--accent)}
+.card .recog{font-size:1.02rem}
+.card .you{font-size:.9rem;color:var(--muted);border-left:2px solid var(--accent);padding-left:12px}
+.card dl{margin:0;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.card dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.card dd{margin:0;font-size:.93rem}
+.card dd.help{color:var(--muted)}
+
+.cta{background:var(--slab);color:var(--slab-ink);border-radius:var(--r);padding:28px 22px;display:flex;flex-direction:column;gap:14px}
+.cta .label{color:var(--accent)}
+.cta p{color:var(--slab-muted);max-width:58ch}
+.cta p b{color:var(--slab-ink);font-weight:600}
+.cta .act{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.cta .btn.ghost{color:var(--slab-ink);border-color:var(--slab-line)}
+.handle{font-family:var(--mono);font-size:.82rem;color:var(--slab-muted);text-align:center}
+.again{align-self:center}
+.fine{text-align:center;color:var(--muted);font-size:.78rem}
+</style>
+
+<div class="wrap">
+  <main id="app"></main>
+  <p class="fine">При заболеваниях, беременности или приёме лекарств рекомендуется сначала обратиться к врачу.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- data ---------- */
+const ZONES={
+  food:{name:'Питание',help:'Собрать меню под твой график и править калории по твоему весу — это и есть ведение.'},
+  train:{name:'Тренировки',help:'Программа под твою цель и уровень и рост нагрузки по неделям — с этим помогаю в ведении.'},
+  protein:{name:'Белок',help:'Посчитать норму под твой вес и цель и разложить её в обычную еду — разберём в переписке.'},
+  control:{name:'Контроль',help:'Читать твои цифры и вовремя менять план, а не бросать — это моя ежедневная работа в ведении.'},
+  rest:{name:'Режим',help:'Встроить сон и движение в твой реальный график — разберём в переписке.'}
+};
+const ORDER=['food','train','protein','control','rest'];
+
+/* each scored option: s = 0 (ok) / 1 (partly) / 2 (problem); r = how the person recognises themself; g = strength line when s=0 */
+const Q=[
+ {id:'goal',kind:'profile',label:'Начнём с тебя',t:'Чего ты хочешь от тела в первую очередь?',o:[
+   {t:'Убрать живот и бока',v:'убрать живот и бока'},
+   {t:'Подсушиться до рельефа',v:'подсушиться до рельефа'},
+   {t:'Сбросить вес',v:'сбросить вес'}]},
+ {id:'dur',kind:'profile',label:'Начнём с тебя',t:'Сколько ты уже ходишь в зал без нужного результата?',o:[
+   {t:'Меньше 3 месяцев',v:0},{t:'От 3 месяцев до года',v:1},{t:'Больше года',v:2}]},
+ {id:'kcal',zone:'food',t:'Ты знаешь, сколько калорий съедаешь в обычный день?',o:[
+   {t:'Да, считаю',s:0,g:'Считаешь калории — у большинства этой базы нет.'},
+   {t:'Примерно прикидываю',s:1,r:'Ты прикидываешь калории «на глаз». Вроде всё под контролем, а вес стоит.'},
+   {t:'Понятия не имею',s:2,r:'Ты не знаешь, сколько ешь. Тренировки есть, а цифры еды — нет.'}]},
+ {fact:'kcal'},
+ {id:'post',zone:'food',t:'Что обычно происходит с едой после тренировки?',o:[
+   {t:'Ем по плану, как обычно',s:0,g:'После тренировки ешь по плану, без «награды».'},
+   {t:'Не задумываюсь об этом',s:1,r:'После зала ешь «как получится» — без плана.'},
+   {t:'Позволяю себе больше — заслужил(а)',s:2,r:'После зала ты разрешаешь себе больше — ведь заслужил(а).'},
+   {t:'Голод такой, что ем всё подряд',s:2,r:'После зала накрывает голод, и ешь всё подряд.'}]},
+ {id:'wknd',zone:'food',t:'Как ты ешь в выходные по сравнению с буднями?',o:[
+   {t:'Так же',s:0,g:'Выходные не ломают режим.'},
+   {t:'Чуть свободнее',s:1,r:'В выходные ешь чуть свободнее — кажется, что немного.'},
+   {t:'Выходные — отдых от режима',s:2,r:'Будни по плану, а выходные — отдых от режима.'}]},
+ {id:'drink',zone:'food',t:'Сладкие напитки, соки, сладкий кофе, алкоголь — как часто?',o:[
+   {t:'Почти никогда',s:0,g:'Не пьёшь калории.'},
+   {t:'Пару раз в неделю',s:1,r:'Пару раз в неделю — сок, сладкий кофе или бокал.'},
+   {t:'Почти каждый день',s:2,r:'Почти каждый день в стакане — сладкое или алкоголь.'}]},
+ {id:'prot',zone:'protein',t:'Есть ли белок в каждом приёме пищи?',hint:'Мясо, рыба, яйца, творог, бобовые',o:[
+   {t:'Да, в каждом',s:0,g:'Белок в каждом приёме пищи.'},
+   {t:'В одном-двух приёмах',s:1,r:'Белок есть, но только в одном-двух приёмах за день.'},
+   {t:'Не слежу',s:2,r:'Ты не следишь за белком — он бывает «как получится».'}]},
+ {fact:'prot'},
+ {id:'scale',zone:'control',t:'Как ты следишь за весом?',o:[
+   {t:'Каждое утро, смотрю среднее за неделю',s:0,g:'Смотришь на средний вес за неделю, а не на одну цифру.'},
+   {t:'Взвешиваюсь иногда',s:1,r:'Взвешиваешься время от времени — динамику не видно.'},
+   {t:'Встаю на весы — и расстраиваюсь от цифры',s:2,r:'Одна цифра на весах портит настроение и желание продолжать.'},
+   {t:'Не взвешиваюсь',s:2,r:'Ты не взвешиваешься и не знаешь, куда движется вес.'}]},
+ {id:'waist',zone:'control',t:'Ты меряешь талию?',o:[
+   {t:'Раз в неделю',s:0,g:'Меряешь талию — видишь изменения, которых нет на весах.'},
+   {t:'Иногда',s:1,r:'Талию меряешь иногда — сравнить не с чем.'},
+   {t:'Никогда',s:2,r:'Талию не меряешь и ориентируешься только на весы.'}]},
+ {id:'prog',zone:'train',t:'В зале твои рабочие веса и повторы растут?',o:[
+   {t:'Да, записываю и добавляю',s:0,g:'Нагрузка в зале растёт — ты её записываешь.'},
+   {t:'Иногда',s:1,r:'Веса растут от случая к случаю, без системы.'},
+   {t:'Месяцами делаю одно и то же',s:2,r:'Месяцами те же веса и те же подходы.'}]},
+ {id:'plan',zone:'train',t:'Откуда твоя программа тренировок?',o:[
+   {t:'Составлена под меня, есть план',s:0,g:'Тренируешься по плану под себя.'},
+   {t:'Из интернета или приложения',s:1,r:'Программа из интернета или приложения — «для всех».'},
+   {t:'Делаю, что захочется',s:2,r:'Приходишь в зал и делаешь, что захочется.'}]},
+ {id:'sleep',zone:'rest',t:'Сколько ты обычно спишь?',o:[
+   {t:'7 часов и больше',s:0,g:'Спишь 7+ часов.'},
+   {t:'6–7 часов',s:1,r:'Спишь 6–7 часов — вроде нормально, но впритык.'},
+   {t:'Меньше 6 часов',s:2,r:'Спишь меньше 6 часов.'}]},
+ {fact:'sleep'},
+ {id:'steps',zone:'rest',t:'Сколько ты двигаешься вне зала?',o:[
+   {t:'Много хожу, 8 000+ шагов',s:0,g:'Много двигаешься вне зала.'},
+   {t:'Средне, 5–8 тысяч шагов',s:1,r:'Вне зала двигаешься средне — 5–8 тысяч шагов.'},
+   {t:'Мало или не знаю',s:2,r:'Час в зале — а остальное время стул, машина, диван.'}]}
+];
+const QS=Q.filter(q=>q.id);
+
+/* fact screens: text depends on the answer just given */
+const FACTS={
+ kcal:{q:'kcal',big:'59',lab:'исследований',src:'Систематический обзор Burrows и соавт., 2019',
+   bad:'<b>Ты не один.</b> В большинстве из 59 исследований люди съедали больше, чем думали. Пара сотен «невидимых» калорий в день — и дефицита уже нет.',
+   ok:'<b>Это редкость.</b> В большинстве из 59 исследований люди съедали больше, чем думали. Ты уже обходишь эту ловушку.'},
+ prot:{q:'prot',big:'1,6',lab:'грамма белка на 1 кг веса',src:'Метаанализ Morton и соавт., 49 исследований, 2018',
+   bad:'<b>Вот где часто теряется рельеф.</b> Примерно до 1,6 г белка на кг веса помогает мышцам расти при силовых. На сушке без белка уходит не только жир, но и мышцы.',
+   ok:'<b>Хорошая база.</b> Примерно до 1,6 г белка на кг веса помогает мышцам расти при силовых. Белок в каждом приёме — простой способ до этого дотянуть.'},
+ sleep:{q:'sleep',big:'+385',lab:'ккал в день',src:'Метаанализ Al Khatib и соавт., 2017',
+   bad:'<b>Недосып съедает дефицит.</b> При недосыпе люди съедают в среднем на 385 ккал в день больше, а тратят столько же. Это почти весь дефицит для похудения.',
+   ok:'<b>Сон работает на тебя.</b> При недосыпе люди съедают в среднем на 385 ккал в день больше. У тебя этой проблемы нет.'}
+};
+
+const CARDS={
+ kcal:{title:'Ешь на глаз',why:'Люди почти всегда недооценивают, сколько съели, — так в большинстве из 59 исследований систематического обзора 2019 года. Пара сотен лишних калорий в день съедает весь дефицит.',todo:'3 дня записывай всё, что ешь и пьёшь, включая масло, соусы и перекусы. Ничего не меняй — просто посмотри на цифру.'},
+ post:{title:'Тренировка как разрешение поесть',why:'Тренировка сжигает обычно несколько сотен калорий, и один «заслуженный» перекус перекрывает её целиком. Поэтому одни тренировки без питания дают скромный результат — так в позиции Американского колледжа спортивной медицины.',todo:'Спланируй еду после тренировки заранее: обычный приём пищи с белком, а не награда.'},
+ wknd:{title:'Будни по плану, выходные — без режима',why:'Худеют за счёт дефицита за неделю, а не за день. Пять дней по −400 ккал — это −2 000. Два свободных дня по +1 000 ккал возвращают всё обратно.',todo:'Вместо свободных дней оставь в выходные один свободный приём пищи.'},
+ drink:{title:'Калории в стакане',why:'Сладкие напитки связаны с набором веса — так показывает метаанализ исследований взрослых и детей 2013 года. Жидкие калории почти не насыщают, и ты ешь столько же.',todo:'На неделю замени их на воду, чай, кофе без сахара или напитки без сахара.'},
+ prot:{title:'Мало белка',why:'По метаанализу 49 исследований белок примерно до 1,6 г на кг веса помогает мышцам расти при силовых. На сушке его нужно не меньше — иначе вместе с жиром уходят и мышцы, а рельефу не из чего появиться.',todo:'Добавь источник белка в каждый приём пищи: мясо, рыба, яйца, творог, бобовые.'},
+ scale:{title:'Не видишь реальную динамику',why:'Регулярное взвешивание помогает худеть и не связано с тревогой — по обзорам 2015 года. Но вес за ночь гуляет из-за воды, соли и еды внутри, поэтому смотрят не на одну цифру, а на среднее за неделю.',todo:'Взвешивайся каждое утро одинаково и смотри только на среднее за 7 дней.'},
+ waist:{title:'Не меряешь талию',why:'Талия может уменьшаться, даже когда вес стоит, — это записано в международном консенсусе 2020 года. Без замеров легко бросить то, что уже работает.',todo:'Раз в неделю мерь талию: утром, натощак, в одной и той же точке.'},
+ prog:{title:'Одна и та же нагрузка месяцами',why:'Постепенный рост нагрузки — главный принцип силовых тренировок в рекомендациях Американского колледжа спортивной медицины. Без него мышцам незачем расти.',todo:'Записывай веса и повторы. Когда делаешь все подходы чисто — добавь 1 повтор или немного веса.'},
+ plan:{title:'Тренировки без своего плана',why:'Программа должна подходить под цель и уровень и меняться со временем — это основа рекомендаций Американского колледжа спортивной медицины.',todo:'Возьми одну программу на 6–8 недель и меняй в ней только веса и повторы.'},
+ sleep:{title:'Недосып',why:'По метаанализу 2017 года при недосыпе люди съедают в среднем на 385 ккал в день больше, а тратят столько же.',todo:'Добавь ко сну 30–60 минут и ложись в одно и то же время.'},
+ steps:{title:'Мало движения вне зала',why:'Зал — это 3–4 часа в неделю. Сколько ты тратишь за остальные 160 часов, зависит от того, сколько ты двигаешься в течение дня.',todo:'Добавь к обычному дню 2 000–3 000 шагов: прогулка после еды, лестница вместо лифта.'}
+};
+
+const TYPES={
+ food:{t:'Зал на совесть, еда на глаз',d:'Ты тренируешься, но калории незаметно съедают результат. Это самая частая история у тех, кто ходит в зал, а живот и вес на месте.'},
+ train:{t:'Хожу в зал, но не прогрессирую',d:'Ты стабильно ходишь, но в тренировках нет системы, которая заставляет тело меняться. Тело привыкает — и результат встаёт.'},
+ protein:{t:'Жир уходит медленно, мышцы не растут',d:'Тренировки есть, а строить мышцы не из чего. Без белка на сушке уходят и мышцы, а рельеф не появляется.'},
+ control:{t:'Не видно прогресса — и опускаются руки',d:'Ты не видишь, что на самом деле происходит с телом. Так легко бросить то, что уже начало работать.'},
+ rest:{t:'Режим съедает результат',d:'Сон и движение вне зала незаметно гасят то, что ты делаешь в зале.'},
+ fine:{t:'Фундамент в порядке',d:'По тесту у тебя всё хорошо: базовых ошибок нет. Значит, причина в том, что тест не видит, — в точных цифрах и деталях.'}
+};
+
+/* ---------- logic (pure) ---------- */
+function compute(ans){
+  const z={};ORDER.forEach(k=>z[k]={s:0,m:0});
+  const flags=[],good=[];
+  QS.forEach((q,qi)=>{ if(!q.zone)return; const o=q.o[ans[q.id]]; z[q.zone].s+=o.s; z[q.zone].m+=2;
+    if(o.s>0)flags.push({id:q.id,zone:q.zone,s:o.s,r:o.r,qi}); else good.push(o.g); });
+  ORDER.forEach(k=>{z[k].good=Math.round((1-z[k].s/z[k].m)*10)}); // 0..10, how much is done right
+  const totS=ORDER.reduce((a,k)=>a+z[k].s,0), totM=ORDER.reduce((a,k)=>a+z[k].m,0);
+  const score=Math.round((1-totS/totM)*100);
+  flags.sort((a,b)=>b.s-a.s||a.qi-b.qi);
+  /* weakest zone first; if two zones differ by 1 point or less, the more fundamental one (ORDER: food first) wins */
+  const zs=ORDER.slice().sort((a,b)=>{const d=z[a].good-z[b].good;return Math.abs(d)<=1?ORDER.indexOf(a)-ORDER.indexOf(b):d});
+  const pick=[];
+  zs.forEach(k=>{const f=flags.find(f=>f.zone===k);if(f&&pick.length<3)pick.push(f)});
+  flags.forEach(f=>{if(pick.length<3&&!pick.includes(f))pick.push(f)});
+  const weak=zs.filter(k=>z[k].good<=7);
+  const top=weak.length?weak[0]:'fine';
+  const second=weak.length>1?weak[1]:null;
+  return {z,score,flags:pick,allFlags:flags.length,good,top,second};
+}
+function level(g){return g>=8?['ok','В порядке']:g>=5?['mid','Тормозит']:['bad','Главная проблема']}
+
+/* ---------- ui ---------- */
+const app=document.getElementById('app');
+let step=0, ans={}, timer=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(html){app.innerHTML='<section class="screen">'+html+'</section>';window.scrollTo({top:0});}
+
+function intro(){
+  render('<p class="label hot">Роман Шипилов · @mr.greeat</p>'+
+   '<h1>Почему тренировки не помогают добиться рельефного тела</h1>'+
+   '<p class="lead">За 2 минуты ты узнаешь, что именно тормозит твой результат, свой тип и три главные ошибки — и что с ними делать.</p>'+
+   '<div class="zonesPreview">'+ORDER.map(k=>'<span class="chip"><i></i>'+ZONES[k].name+'</span>').join('')+'</div>'+
+   '<div class="facts"><div><b>'+QS.length+'</b><span>вопросов</span></div><div><b>2 мин</b><span>на тест</span></div><div><b>3</b><span>главные ошибки</span></div></div>'+
+   '<button class="btn" type="button" id="go">Пройти тест</button>');
+  document.getElementById('go').onclick=()=>{step=0;ans={};question()};
+}
+
+function stepsBar(){const n=QS.length;const done=QS.filter(q=>ans[q.id]!==undefined).length;
+  return '<div class="steps" style="--n:'+n+'">'+Array.from({length:n},(_,k)=>'<i class="'+(k<done?'done':'')+'"></i>').join('')+'</div>'}
+
+function question(){
+  const item=Q[step];
+  if(item.fact){return fact(item.fact)}
+  const qn=QS.indexOf(item)+1;
+  render('<div class="qtop"><button class="btn ghost small" type="button" id="back"'+(step===0?' style="visibility:hidden"':'')+'>← Назад</button><span class="label">'+qn+' / '+QS.length+'</span></div>'+
+   stepsBar()+
+   '<p class="label hot">'+esc(item.zone?ZONES[item.zone].name:item.label)+'</p>'+
+   '<h2 class="qtitle">'+esc(item.t)+'</h2>'+(item.hint?'<p class="qhint">'+esc(item.hint)+'</p>':'')+
+   '<div class="opts" role="group" aria-label="Варианты ответа">'+item.o.map((o,k)=>'<button type="button" class="opt'+(ans[item.id]===k?' sel':'')+'" data-k="'+k+'"><span class="k">'+String.fromCharCode(65+k)+'</span><span>'+esc(o.t)+'</span></button>').join('')+'</div>');
+  document.getElementById('back').onclick=back;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ans[item.id]=+b.dataset.k;app.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===b));clearTimeout(timer);timer=setTimeout(next,200)});
+}
+function back(){clearTimeout(timer);do{step--}while(step>0&&Q[step].fact);question()}
+function next(){step++; if(step<Q.length)question(); else analysing()}
+
+function fact(id){
+  const f=FACTS[id], o=QS.find(q=>q.id===f.q).o[ans[f.q]], bad=o.s>0;
+  render(stepsBar()+'<div class="fact"><p class="label">'+(bad?'Знакомо?':'Отлично')+'</p><p>'+(bad?f.bad:f.ok)+'</p><div style="border-top:1px solid var(--slab-line);padding-top:16px"><div class="big">'+f.big+'</div><p style="margin-top:4px">'+f.lab+'</p></div><p class="src">'+f.src+'</p></div>'+
+   '<button class="btn" type="button" id="cont">Дальше</button>');
+  document.getElementById('cont').onclick=next;
+}
+
+function analysing(){
+  render('<div class="anal"><p class="label hot">Считаем результат</p><h2>Сверяем твои ответы по 5 зонам</h2><ul>'+ORDER.map(k=>'<li data-z="'+k+'"><span>'+ZONES[k].name+'</span><span class="s">…</span></li>').join('')+'</ul></div>');
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const items=[...app.querySelectorAll('li')];let n=0;
+  const tick=()=>{if(n<items.length){items[n].classList.add('done');items[n].querySelector('.s').textContent='готово';n++;timer=setTimeout(tick,reduce?0:420)}else{timer=setTimeout(result,reduce?0:350)}};
+  timer=setTimeout(tick,reduce?0:300);
+}
+
+function gauge(score){
+  const r=56,c=2*Math.PI*r,col=score>=80?'var(--ok)':score>=55?'var(--mid)':'var(--bad)';
+  return '<div class="gauge" role="img" aria-label="Результат '+score+' из 100"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="'+r+'" fill="none" stroke="var(--slab-track)" stroke-width="12"/><circle cx="66" cy="66" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+(c*score/100).toFixed(1)+' '+c.toFixed(1)+'"/></svg><div class="num"><b>'+score+'</b><span>из 100</span></div></div>';
+}
+
+function result(){
+  const r=compute(ans);
+  const goal=QS[0].o[ans.goal].v, dur=QS[1].o[ans.dur].v;
+  const durTxt=['меньше 3 месяцев в зале','от 3 месяцев до года в зале','больше года в зале'][dur];
+  let desc=TYPES[r.top].d;
+  if(r.top!=='fine'&&r.second)desc+=' Вторая слабая зона — «'+ZONES[r.second].name+'».';
+  const lead=r.top==='fine'
+    ? 'Ты хочешь '+goal+', и по базовым привычкам делаешь почти всё правильно.'
+    : (dur===2?'Больше года в зале — значит, дело не в лени и не в силе воли. ':dur===1?'Месяцы в зале без нужного результата — значит, усилий хватает, мешает другое. ':'Хорошо, что ищешь причину сразу, а не через год. ')+'Чтобы '+goal+', начни с ошибок ниже.';
+
+  let html='<div class="hero">'+gauge(r.score)+'<div class="txt"><p class="label">Твой тип</p><h2>'+esc(TYPES[r.top].t)+'</h2><p>'+esc(desc)+'</p></div>'+
+   '<div class="meta"><span>Цель: '+esc(goal)+'</span><span>'+durTxt+'</span><span>Ошибок найдено: '+r.allFlags+'</span>'+(r.allFlags>3?'<span>Ниже — 3 главные</span>':'')+'</div></div>'+
+   '<p style="font-size:1.05rem">'+esc(lead)+'</p>';
+
+  html+='<div class="block"><p class="label">Твоя карта по 5 зонам</p><div class="zones">'+ORDER.map(k=>{const g=r.z[k].good,[l,t]=level(g);
+    return '<div class="zone" data-l="'+l+'"><h3>'+ZONES[k].name+'</h3><span class="st">'+t+' · '+g+'/10</span><div class="meter" role="img" aria-label="'+ZONES[k].name+': '+g+' из 10">'+Array.from({length:10},(_,n)=>'<i class="'+(n<g?'on':'')+'"></i>').join('')+'</div></div>'}).join('')+
+   '</div><p class="legend">Чем больше делений, тем больше в зоне сделано правильно.</p></div>';
+
+  if(r.good.length){html+='<div class="block good"><p class="label">Что у тебя уже хорошо</p><ul>'+r.good.slice(0,5).map(g=>'<li><span class="ck">✓</span><span>'+esc(g)+'</span></li>').join('')+(r.good.length>5?'<li><span class="ck">+</span><span>И ещё '+(r.good.length-5)+' — тоже в порядке.</span></li>':'')+'</ul></div>'}
+
+  if(r.flags.length){
+    html+='<div class="block"><p class="label">'+(r.flags.length===1?'Что тормозит результат':'Твои главные ошибки')+'</p><div class="cards">'+r.flags.map((f,n)=>{const c=CARDS[f.id];
+      return '<article class="card'+(n===0?' main':'')+'"><div class="head"><div class="tag">'+(n===0?'<span class="pill hot">Главное</span>':'<span class="pill">Ошибка '+(n+1)+'</span>')+'<span class="pill">'+ZONES[f.zone].name+'</span></div><h3>'+esc(c.title)+'</h3><p class="you">Твой ответ: '+esc(f.r)+'</p></div>'+
+       '<dl><div><dt>Почему это тормозит</dt><dd>'+esc(c.why)+'</dd></div><div><dt>Что сделать сам уже сегодня</dt><dd>'+esc(c.todo)+'</dd></div><div><dt>Где понадобится помощь</dt><dd class="help">'+esc(ZONES[f.zone].help)+'</dd></div></dl></article>'}).join('')+'</div></div>';
+  }
+  if(r.top==='fine'){
+    html+='<div class="block"><p class="label">Что тест не видит</p><div class="card main"><h3>'+(r.allFlags?'Мелочи есть, но дело, скорее всего, не в них':'Базовых ошибок нет — значит, причина глубже')+'</h3><p class="recog">Когда база в порядке, а результата нет, причина обычно в деталях, которые видно только по твоим цифрам за 2–3 недели:</p><dl><div><dt>Что проверить</dt><dd>Сколько ты на самом деле ешь по сравнению с тем, что записываешь. Подходят ли калории и белок именно тебе. Растёт ли нагрузка в нужных упражнениях. Как меняются талия и средний вес по неделям.</dd></div><div><dt>Где понадобится помощь</dt><dd class="help">Разобрать это по твоим данным — ровно то, что я делаю в личной переписке.</dd></div></dl></div></div>';
+  }
+
+  const tg='https://t.me/mrgreeatbot?start=t_'+r.top;
+  html+='<div class="cta"><p class="label">Следующий шаг</p><h2>Получи разбор своего типа в Telegram</h2>'+
+   '<p>В боте пришлю, с чего начать именно с твоим типом. А если захочешь — разберу твою ситуацию лично в переписке.</p>'+
+   '<div class="act"><a class="btn" href="'+tg+'" target="_blank" rel="noopener">Получить разбор в Telegram</a><span class="handle">Telegram-бот @mrgreeatbot · Instagram @mr.greeat</span></div></div>'+
+   '<button class="btn ghost small again" type="button" id="again">Пройти тест заново</button>';
+  render(html);
+  document.getElementById('again').onclick=()=>{step=0;ans={};question()};
+}
+
+window.__quiz={Q,QS,compute,CARDS,FACTS,TYPES};
+intro();
+})();
+</script>
+
+</body></html>

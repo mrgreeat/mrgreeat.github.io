@@ -1,0 +1,278 @@
+<!doctype html><html lang="ru"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Калькулятор питания под тренировки</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: editorial header, then form (left) + sticky dark result slab (right); stacks to one column on phones. */
+:root{
+  --bg:#f2f3ef; --surface:#ffffff; --track:#e8eae4; --ink:#121613; --muted:#6a706b; --line:#e0e3dc;
+  --accent:#d2461b; --accent-ink:#ffffff; --note:#fbeee8;
+  --slab:#121613; --slab-ink:#f2f3ef; --slab-muted:#9aa29c; --slab-line:#2a302c;
+  --pro:#7d9cff; --fat:#e2b45b; --carb:#7cc59a;
+  --sans:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0d0c; --surface:#131715; --track:#1b201d; --ink:#eef0ec; --muted:#8d948e; --line:#232925;
+  --accent:#ff6b3d; --accent-ink:#160904; --note:#2a1810;
+  --slab:#181d1a; --slab-ink:#eef0ec; --slab-muted:#8d948e; --slab-line:#2b322e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0d0c; --surface:#131715; --track:#1b201d; --ink:#eef0ec; --muted:#8d948e; --line:#232925;
+  --accent:#ff6b3d; --accent-ink:#160904; --note:#2a1810;
+  --slab:#181d1a; --slab-ink:#eef0ec; --slab-muted:#8d948e; --slab-line:#2b322e; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+.label{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+
+/* header */
+.top{display:flex;flex-direction:column;gap:14px;max-width:720px}
+.top .label{color:var(--accent)}
+h1{font-weight:800;font-size:clamp(2rem,6.4vw,3.6rem);line-height:1.02;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.lead{color:var(--muted);font-size:1.05rem;margin:0;max-width:58ch}
+
+/* main grid */
+.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:24px;align-items:start}
+@media (max-width:880px){.main{grid-template-columns:minmax(0,1fr)}}
+
+/* form */
+form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 24px;display:flex;flex-direction:column}
+@media (max-width:480px){form{padding:4px 16px}}
+.row{display:flex;flex-direction:column;gap:12px;padding-block:20px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-title{font-weight:600;font-size:.95rem;margin:0;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.row-title small{font-weight:400;color:var(--muted);font-size:.82rem}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;margin:0 0 12px}
+
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:480px){.fields{grid-template-columns:1fr 1fr}.fields .f-w{grid-column:1/-1}}
+.field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.field>span{font-size:.82rem;color:var(--muted)}
+.input{position:relative;display:flex;align-items:center;height:52px;border:1px solid var(--line);border-radius:12px;background:var(--bg);transition:border-color .15s}
+.input:focus-within{border-color:var(--ink)}
+.input input{all:unset;flex:1;min-width:0;width:100%;height:100%;padding:0 0 0 14px;font-size:1.15rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+.input input::placeholder{color:var(--muted);font-weight:400}
+.input em{font-style:normal;color:var(--muted);font-size:.85rem;padding:0 14px 0 6px}
+
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;padding:4px;background:var(--track);border-radius:12px}
+.seg label{position:relative;min-width:0}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.seg span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:44px;padding:6px 8px;border-radius:9px;font-size:.9rem;font-weight:500;color:var(--muted);transition:background .15s,color .15s,box-shadow .15s;line-height:1.2}
+.seg input:checked+span{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:1px}
+.seg.stack{grid-auto-flow:row;grid-auto-columns:auto}
+.seg.stack span{justify-content:flex-start;text-align:left;padding:10px 14px}
+
+.goal-note{display:flex;flex-direction:column;gap:12px;background:var(--note);border-radius:12px;padding:16px}
+.goal-note p{margin:0;font-size:.9rem}
+.goal-note .input{background:var(--surface)}
+.sample{font-size:.82rem;color:var(--muted);margin:0;padding-top:16px}
+
+/* result slab */
+.slab{background:var(--slab);color:var(--slab-ink);border-radius:var(--r);padding:28px 24px;display:flex;flex-direction:column;gap:24px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:880px){.slab{position:static}}
+.slab .label{color:var(--slab-muted)}
+.big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big b{font-weight:800;font-size:clamp(3.4rem,11vw,4.6rem);line-height:.9;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.big span{color:var(--slab-muted);font-size:.95rem}
+.macros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--slab-line)}
+.mac{display:flex;flex-direction:column;gap:4px;padding:16px 12px 0 0}
+.mac+.mac{padding-left:14px;border-left:1px solid var(--slab-line)}
+.mac i{width:8px;height:8px;border-radius:50%;display:block;margin-bottom:6px}
+.mac b{font-size:1.75rem;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.mac span{font-size:.8rem;color:var(--slab-muted)}
+.bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px}
+.bar i{display:block;height:100%;transition:width .3s ease}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.why{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:.86rem;color:var(--slab-muted)}
+.why li{padding-left:16px;position:relative}
+.why li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:1px;background:var(--slab-muted)}
+
+/* how-to */
+.how{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:32px;border-top:1px solid var(--line);padding-top:32px}
+@media (max-width:760px){.how{grid-template-columns:1fr;gap:20px}}
+h2{font-weight:800;font-size:clamp(1.4rem,3.6vw,1.9rem);letter-spacing:-.025em;line-height:1.1;margin:0;text-wrap:balance}
+.how .side{display:flex;flex-direction:column;gap:12px}
+.how .side p{margin:0;color:var(--muted);font-size:.92rem;max-width:40ch}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column}
+.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding-block:16px;border-bottom:1px solid var(--line)}
+.steps li:first-child{padding-top:0}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:.8rem;color:var(--accent);padding-top:3px}
+
+/* cta */
+.cta{background:var(--slab);color:var(--slab-ink);border-radius:var(--r);padding:32px 28px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:28px;align-items:end}
+@media (max-width:760px){.cta{grid-template-columns:1fr;padding:28px 20px}}
+.cta .label{color:var(--accent)}
+.cta h2{margin-top:10px}
+.cta p{margin:12px 0 0;color:var(--slab-muted);max-width:56ch}
+.cta p b{color:var(--slab-ink);font-weight:600}
+.act{display:flex;flex-direction:column;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;text-decoration:none;border:0;cursor:pointer;padding:0 20px;text-align:center}
+.btn.ghost{background:transparent;color:var(--slab-ink);border:1px solid var(--slab-line)}
+.handle{font-family:var(--mono);font-size:.85rem;color:var(--slab-muted);text-align:center;user-select:all}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fine{text-align:center;color:var(--muted);font-size:.78rem;margin:0}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="label">Роман Шипилов · @mr.greeat</p>
+    <h1>Рассчитай калорийность для рельефного тела</h1>
+  </header>
+
+  <div class="main">
+    <form id="f" novalidate>
+      <fieldset class="row">
+        <legend class="row-title">Пол</legend>
+        <div class="seg">
+          <label><input type="radio" name="sex" id="sex-m" value="m" checked><span>Мужчина</span></label>
+          <label><input type="radio" name="sex" id="sex-f" value="f"><span>Женщина</span></label>
+        </div>
+      </fieldset>
+
+      <div class="row">
+        <p class="row-title">Параметры</p>
+        <div class="fields">
+          <label class="field" for="age"><span>Возраст</span><span class="input"><input id="age" type="text" inputmode="numeric" autocomplete="off" value="32"><em>лет</em></span></label>
+          <label class="field" for="h"><span>Рост</span><span class="input"><input id="h" type="text" inputmode="numeric" autocomplete="off" value="180"><em>см</em></span></label>
+          <label class="field f-w" for="w"><span>Вес сейчас</span><span class="input"><input id="w" type="text" inputmode="decimal" autocomplete="off" value="92"><em>кг</em></span></label>
+        </div>
+        <div class="goal-note" id="goalwrap" hidden>
+          <p><b id="bmiline">ИМТ выше 30.</b> Впиши вес, к которому идёшь. Белок посчитаем на него, а не на текущий: так он не будет завышен.</p>
+          <label class="field" for="goalw"><span>Желаемый вес</span><span class="input"><input id="goalw" type="text" inputmode="decimal" autocomplete="off" placeholder="например, 80"><em>кг</em></span></label>
+        </div>
+      </div>
+
+      <fieldset class="row">
+        <legend class="row-title">Образ жизни</legend>
+        <div class="seg stack" id="pal">
+          <label><input type="radio" name="pal" id="pal-1" value="1.4"><span>Сидячая работа, без зала</span></label>
+          <label><input type="radio" name="pal" id="pal-2" value="1.55" checked><span>Сидячая работа + зал 2–3 раза в неделю</span></label>
+          <label><input type="radio" name="pal" id="pal-3" value="1.85"><span>Много хожу или работа на ногах</span></label>
+          <label><input type="radio" name="pal" id="pal-4" value="2.2"><span>Физический труд или тяжёлые тренировки почти каждый день</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="row">
+        <legend class="row-title">Силовые в неделю</legend>
+        <div class="seg">
+          <label><input type="radio" name="tr" id="tr-0" value="0"><span>Нет</span></label>
+          <label><input type="radio" name="tr" id="tr-1" value="1"><span>1 раз</span></label>
+          <label><input type="radio" name="tr" id="tr-2" value="2" checked><span>2 и больше</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="row">
+        <legend class="row-title">Опыт в зале</legend>
+        <div class="seg">
+          <label><input type="radio" name="lvl" id="lvl-1" value="1.6"><span>Новичок</span></label>
+          <label><input type="radio" name="lvl" id="lvl-2" value="1.8" checked><span>Средний</span></label>
+          <label><input type="radio" name="lvl" id="lvl-3" value="2.0"><span>Давно в теме</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="row">
+        <legend class="row-title">Цель</legend>
+        <div class="seg">
+          <label><input type="radio" name="goal" id="goal-cut" value="cut" checked><span>Убрать жир</span></label>
+          <label><input type="radio" name="goal" id="goal-keep" value="keep"><span>Держать вес</span></label>
+        </div>
+        <p class="sample" id="sample">В полях пример. Впиши свои данные — расчёт обновится сразу.</p>
+      </fieldset>
+    </form>
+
+    <section class="slab" aria-live="polite">
+      <p class="label">Твоя норма на каждый день</p>
+      <div class="big"><b id="kcal">—</b><span>ккал</span></div>
+      <div class="bar" aria-hidden="true"><i id="bp" style="background:var(--pro)"></i><i id="bf" style="background:var(--fat)"></i><i id="bc" style="background:var(--carb)"></i></div>
+      <div class="macros">
+        <div class="mac"><i style="background:var(--pro)"></i><b id="pg">—</b><span>белки, г</span></div>
+        <div class="mac"><i style="background:var(--fat)"></i><b id="fg">—</b><span>жиры, г</span></div>
+        <div class="mac"><i style="background:var(--carb)"></i><b id="cg">—</b><span>углеводы, г</span></div>
+      </div>
+      <ul class="why" id="why"></ul>
+    </section>
+  </div>
+
+  <section class="how">
+    <div class="side">
+      <p class="label">Проверка</p>
+      <h2>Как понять, что цифра твоя</h2>
+      <p>Любая формула ошибается примерно на 10% в обе стороны. Это стартовая цифра, а точную показывает только твой вес за 2–3 недели.</p>
+    </div>
+    <ol class="steps">
+      <li>Ешь по этой норме одинаково каждый день — в дни тренировок и отдыха.</li>
+      <li>Взвешивайся каждое утро после туалета, до еды. Смотри на среднее за 7 дней, а не на одну цифру: за ночь вес гуляет из‑за воды, соли и еды внутри.</li>
+      <li>Раз в неделю мерь талию в одной и той же точке.</li>
+      <li>Если 3–4 недели не снижается ни среднее, ни талия — сначала проверь, точно ли считаешь еду. Потом правь калории.</li>
+    </ol>
+  </section>
+
+  <section class="cta">
+    <div>
+      <p class="label">Следующий шаг</p>
+      <h2>Цифра есть. Дальше — понять, почему живот стоит</h2>
+      <p>Нажми кнопку — в Telegram-боте отметишь, ешь ли ты сейчас больше или меньше этой нормы, и получишь, что делать дальше. Если захочешь — разберу твою ситуацию лично в переписке.</p>
+    </div>
+    <div class="act">
+      <a class="btn" href="https://t.me/mrgreeatbot?start=calc" target="_blank" rel="noopener">Получить разбор в Telegram</a>
+      <span class="handle">Telegram-бот @mrgreeatbot · Instagram @mr.greeat</span>
+    </div>
+  </section>
+
+  <p class="fine">При заболеваниях, беременности или приёме лекарств рекомендуется сначала обратиться к врачу.</p>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const val=name=>{const el=document.querySelector('input[name="'+name+'"]:checked');return el?el.value:null};
+  const num=id=>{const v=parseFloat(String($(id).value).replace(',','.'));return isFinite(v)?v:NaN};
+  const setVal=(name,v)=>{const el=document.querySelector('input[name="'+name+'"][value="'+v+'"]');if(el)el.checked=true};
+  const DEF=400; let touched=false;
+  const fmt=x=>String(Math.round(x*10)/10).replace('.',',');
+  function dash(msg){['kcal','pg','fg','cg'].forEach(i=>$(i).textContent='—');['bp','bf','bc'].forEach(i=>$(i).style.width='33.3%');$('why').innerHTML='<li>'+msg+'</li>';$('goalwrap').hidden=true}
+  function calc(){
+    const male=val('sex')==='m', age=num('age'), h=num('h'), w=num('w'), gw=num('goalw');
+    const pal=parseFloat(val('pal')), tr=+val('tr'), k=parseFloat(val('lvl')), cut=val('goal')==='cut';
+    if(!(age>=18&&age<=80&&h>=140&&h<=220&&w>=40&&w<=250)){dash('Впиши возраст (от 18), рост и вес — здесь появится расчёт.');return}
+    const bmi=w/Math.pow(h/100,2);
+    const obese=bmi>30;
+    $('goalwrap').hidden=!obese;
+    $('bmiline').textContent='Твой ИМТ — '+bmi.toFixed(1).replace('.',',')+', выше 30.';
+    const useHaaf=tr>=2&&!obese;
+    const rmr=useHaaf? 11.936*w+587.728*(h/100)-8.129*age+191.027*(male?1:0)+29.279
+                     : 10*w+6.25*h-5*age+(male?5:-161);
+    const tdee=rmr*pal, kcal=cut? tdee-DEF : tdee;
+    let base=w, baseNote='на текущий вес', extra='';
+    if(obese){
+      if(gw>=40&&gw<w){base=gw;baseNote='на желаемый вес '+fmt(gw)+' кг'}
+      else{extra='<li>'+(isFinite(gw)?'Желаемый вес должен быть меньше текущего. ':'')+'Пока белок посчитан на текущий вес — впиши желаемый.</li>'}
+    }
+    const p=k*base, f=kcal*0.25/9, c=Math.max(0,(kcal-p*4-f*9)/4), tot=p*4+f*9+c*4;
+    $('kcal').textContent=(Math.round(kcal/10)*10).toLocaleString('ru-RU');
+    $('pg').textContent=Math.round(p);$('fg').textContent=Math.round(f);$('cg').textContent=Math.round(c);
+    $('bp').style.width=(p*4/tot*100)+'%';$('bf').style.width=(f*9/tot*100)+'%';$('bc').style.width=(c*4/tot*100)+'%';
+    $('why').innerHTML=
+      '<li>В покое тело тратит ≈ '+Math.round(rmr)+' ккал, за день с движением — ≈ '+Math.round(tdee)+' ккал.</li>'+
+      (cut?(tr>0?'<li>Минус '+DEF+' ккал: жир уходит, мышцы при силовых сохраняются. Дефицит от 500 ккал уже мешает мышцам.</li>':'<li>Минус '+DEF+' ккал: мягкий дефицит, жир уходит без голодовки. С силовыми мышцы сохранятся лучше.</li>'):'<li>Ешь столько же, сколько тратишь — вес держится.</li>')+
+      '<li>Белок '+k.toFixed(1).replace('.',',')+' г на кг '+baseNote+'. Жиры — 25% калорий, остальное — углеводы.</li>'+extra;
+  }
+  $('f').addEventListener('input',e=>{
+    if(!touched){touched=true;$('sample').hidden=true}
+    const t=e.target;
+    if(t.name==='pal'&&t.value==='1.4')setVal('tr','0');
+    if(t.name==='pal'&&t.value==='1.55'&&val('tr')==='0')setVal('tr','2');
+    if(t.name==='tr'&&t.value==='0'&&val('pal')==='1.55')setVal('pal','1.4');
+    if(t.name==='tr'&&t.value!=='0'&&val('pal')==='1.4')setVal('pal','1.55');
+    calc()});
+  $('f').addEventListener('submit',e=>e.preventDefault());
+  calc();
+})();
+</script>
+
+</body></html>
