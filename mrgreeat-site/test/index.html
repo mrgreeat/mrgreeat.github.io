@@ -361,9 +361,9 @@ function result(){
   }
 
   const tg='https://t.me/mrgreeatbot?start=t_'+r.top;
-  html+='<div class="cta"><p class="label">Следующий шаг</p><h2>Получи разбор своего типа в Telegram</h2>'+
-   '<p>В боте пришлю, с чего начать именно с твоим типом. А если захочешь — разберу твою ситуацию лично в переписке.</p>'+
-   '<div class="act"><a class="btn" href="'+tg+'" target="_blank" rel="noopener">Получить разбор в Telegram</a><span class="handle">Telegram-бот @mrgreeatbot · Instagram @mr.greeat</span></div></div>'+
+  html+='<div class="cta"><p class="label">Следующий шаг</p><h2>Общее направление есть</h2>'+
+   '<p>Теперь можно написать Роману и получить <b>индивидуальные рекомендации</b> под твою ситуацию: питание, тренировки и график.</p>'+
+   '<div class="act"><a class="btn" href="'+tg+'" target="_blank" rel="noopener">Получить рекомендации</a><span class="handle">Откроется Telegram · Роман Шипилов @mr.greeat</span></div></div>'+
    '<button class="btn ghost small again" type="button" id="again">Пройти тест заново</button>';
   render(html);
   document.getElementById('again').onclick=()=>{step=0;ans={};question()};
